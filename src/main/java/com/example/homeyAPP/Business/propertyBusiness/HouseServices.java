@@ -7,7 +7,10 @@ import com.example.homeyAPP.Domain.Entities.properties.Type;
 import com.example.homeyAPP.Repositories.HouseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -98,6 +101,18 @@ public class HouseServices {
         }
     }
 
+    public House updateHouseImage(Long id, String imgUrl) {
+        Optional<House> optionalHouse = houseRepository.findById(id);
+        if (optionalHouse.isPresent()) {
+            House house = optionalHouse.get();
+            house.setImages(imgUrl);
+
+            return houseRepository.save(house);
+        } else {
+            throw new ResourceNotFoundException("House not found with id: " + id);
+        }
+    }
+
     public void deleteHouse(Long id) {
         Optional<House> optionalHouse = houseRepository.findById(id);
         if (optionalHouse.isPresent()) {
@@ -106,4 +121,26 @@ public class HouseServices {
             throw new ResourceNotFoundException("House not found with id: " + id);
         }
     }
+
+    public String uploadImageToFileSystem(MultipartFile file,Long id) throws IOException {
+        String filePath="C:/Users/Asus/Downloads/homeyAPP/"+file.getOriginalFilename();
+
+        Optional<House> house = houseRepository.findById(id);
+                if (house.isPresent()){
+                    House selectedHouse = house.get();
+                    file.transferTo(new File(filePath));
+                    updateHouseImage(selectedHouse.getId(),filePath);
+                }else {
+                    return "error";
+                }
+
+
+
+        if (house != null) {
+            return "file uploaded successfully : " + filePath;
+        }
+        return null;
+    }
+
+
 }

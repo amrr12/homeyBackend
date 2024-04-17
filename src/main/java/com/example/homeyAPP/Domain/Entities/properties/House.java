@@ -1,14 +1,13 @@
 package com.example.homeyAPP.Domain.Entities.properties;
 
-import com.example.homeyAPP.Domain.Entities.actors.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder(builderMethodName = "houseBuilder")
@@ -34,6 +33,10 @@ public class House extends Property {
     private Long owner_id;
 
 
+    @Column(name = "Houseimages")
+    @ElementCollection
+    private List<String> images = new ArrayList<>();
+
     public House (String address,
      String city,
      String region,
@@ -56,5 +59,9 @@ public class House extends Property {
         this.owner_id = owner_id;
     }
 
+    public boolean setImages (String imgpath) {
+
+        return this.images.add(imgpath);
+    }
 
 }

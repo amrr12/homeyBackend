@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -88,5 +90,12 @@ public class HouseController {
         return ResponseEntity.ok("House deleted successfully");
     }
 
+
+    @PostMapping("/image/{houseId}")
+    public ResponseEntity<?> uploadImageToFIleSystem(@RequestParam("image")MultipartFile file,@PathVariable Long houseId) throws IOException {
+        String uploadImage = houseServices.uploadImageToFileSystem(file,houseId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(uploadImage);
+    }
 
 }
