@@ -6,13 +6,21 @@ import com.example.homeyAPP.Domain.Entities.properties.PropertyStatus;
 import com.example.homeyAPP.Domain.Entities.properties.Type;
 import com.example.homeyAPP.Repositories.HouseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -123,7 +131,9 @@ public class HouseServices {
     }
 
     public String uploadImageToFileSystem(MultipartFile file,Long id) throws IOException {
-        String filePath="C:/Users/Asus/Downloads/homeyAPP/"+file.getOriginalFilename();
+        String uploadDir = "C:/Users/Asus/Downloads/homeyAPP/uploads/";
+
+        String filePath=uploadDir+file.getOriginalFilename();
 
         Optional<House> house = houseRepository.findById(id);
                 if (house.isPresent()){
@@ -134,13 +144,29 @@ public class HouseServices {
                     return "error";
                 }
 
-
-
         if (house != null) {
             return "file uploaded successfully : " + filePath;
         }
         return null;
     }
 
+
+
+    public List<byte[]> downloadImageFromFileSystem(Long id) throws IOException {
+        Optional<House> optionalHouse = getHouseById(id);
+        List<byte[]> imageBytesList = new ArrayList<>();
+
+        if (optionalHouse.isPresent()) {
+            House house = optionalHouse.get();
+            List<String> imagePaths = house.getImages();
+
+            for (String imagePath : imagePaths) {
+                byte[] imageBytes = Files.readAllBytes(Paths.get(imagePath));
+                imageBytesList.add(imageBytes);
+            }
+        }
+        System.out.println(imageBytesList);
+        return imageBytesList;
+    }
 
 }

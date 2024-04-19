@@ -33,7 +33,7 @@ public class AuthService {
             var jwtToken = jwtService.generateToken(member);
             return AuthenticationResponse.builder().token(jwtToken).build();
         }else {
-            Agent agent = new Agent(request.getFirstName(),request.getLastName(),request.getEmail(),request.getUserPassword(),request.getPhoneNumber(),Role.Member);
+            Agent agent = new Agent(request.getFirstName(),request.getLastName(),request.getEmail(),request.getUserPassword(),request.getPhoneNumber(),Role.Agent);
             agentRepository.save(agent);
             var jwtToken = jwtService.generateTokenA(agent);
             return AuthenticationResponse.builder().token(jwtToken).build();

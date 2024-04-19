@@ -5,14 +5,21 @@ import com.example.homeyAPP.Domain.Entities.properties.House;
 import com.example.homeyAPP.Domain.Entities.properties.PropertyStatus;
 import com.example.homeyAPP.Domain.Entities.properties.Type;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/house")
@@ -96,6 +103,24 @@ public class HouseController {
         String uploadImage = houseServices.uploadImageToFileSystem(file,houseId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(uploadImage);
+    }
+
+
+    @GetMapping("/image/{houseid}")
+    public ResponseEntity<?> downloadImagesFromFileSystem(@PathVariable Long houseid) throws IOException {
+        List<byte[]> imageDataList = houseServices.downloadImageFromFileSystem(houseid);
+
+        // Create a list of ResponseEntity objects, each representing an image
+        List<ResponseEntity<byte[]>> imageResponses = imageDataList.stream()
+                .map(imageData -> ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(imageData))
+                .collect(Collectors.toList());
+
+        // Return ResponseEntity objects as an array
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(imageResponses.toArray());
     }
 
 }
