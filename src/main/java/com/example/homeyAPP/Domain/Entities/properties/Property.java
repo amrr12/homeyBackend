@@ -15,9 +15,6 @@ import lombok.NoArgsConstructor;
 @MappedSuperclass
 public class Property {
 
-        private String address;
-        private String city;
-        private String region;
         @Enumerated(EnumType.STRING)
         private Type type;
         @Enumerated(EnumType.STRING)

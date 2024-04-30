@@ -5,10 +5,6 @@ import com.example.homeyAPP.Domain.Entities.properties.House;
 import com.example.homeyAPP.Domain.Entities.properties.PropertyStatus;
 import com.example.homeyAPP.Domain.Entities.properties.Type;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -72,10 +67,6 @@ public class HouseController {
         return houseServices.gethousesByRoomsNumBeforeAndBathroomsNum(rooms, bathrooms);
     }
 
-    @GetMapping("/housesbycityandregion/{city}/{region}")
-    public List<House> housesByCityandRegion(@PathVariable String city,@PathVariable String region) {
-        return houseServices.getHousesbyCityandRegion(city,region);
-    }
 
 
 

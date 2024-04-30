@@ -1,6 +1,7 @@
 package com.example.homeyAPP.Domain.Entities.actors;
 
 import com.example.homeyAPP.Domain.Entities.properties.Apartment;
+import com.example.homeyAPP.Domain.Entities.properties.FavoritesHouses;
 import com.example.homeyAPP.Domain.Entities.properties.House;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,14 +25,15 @@ public class Member extends User implements UserDetails {
 
     @Id
     @GeneratedValue
+    @Column(name = "member_id")
     private Long id;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "owner_id")
-    private List<House> houses;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "owner_id")
-    private List<Apartment> apartments;
+    @OneToOne
+    @JoinColumn(name = "fvh_id")
+    private FavoritesHouses favoritesHouses;
+
+
+
     public Member(String firstName, String lastName, String email, String userPassword, String phoneNumber, Role role) {
         this.setFirstName(firstName);
         this.setLastName(lastName);
@@ -39,8 +41,7 @@ public class Member extends User implements UserDetails {
         this.setUserPassword(userPassword);
         this.setPhoneNumber(phoneNumber);
         this.setRole(role);
-        this.houses = new ArrayList<>();
-        this.apartments = new ArrayList<>();
+
     }
 
     @Override

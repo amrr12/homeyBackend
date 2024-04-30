@@ -6,7 +6,7 @@ import com.example.homeyAPP.Domain.Entities.properties.PropertyStatus;
 import com.example.homeyAPP.Domain.Entities.properties.Type;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
+
 
 import java.util.List;
 
@@ -31,5 +31,5 @@ public interface HouseRepository extends JpaRepository<House, Long> {
      List<House> findAllByRoomsNumBeforeAndBathroomsNum(int rooms,int bathrooms);
 
 
-     List<House> findAllByCityAndRegion(String city,String region);
+
 }

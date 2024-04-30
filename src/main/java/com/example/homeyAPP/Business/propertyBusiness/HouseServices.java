@@ -1,21 +1,19 @@
 package com.example.homeyAPP.Business.propertyBusiness;
 
 
-import com.example.homeyAPP.Domain.Entities.properties.House;
-import com.example.homeyAPP.Domain.Entities.properties.PropertyStatus;
-import com.example.homeyAPP.Domain.Entities.properties.Type;
+import com.example.homeyAPP.Domain.Entities.actors.Agent;
+import com.example.homeyAPP.Domain.Entities.properties.*;
+import com.example.homeyAPP.Repositories.AddressRepository;
+import com.example.homeyAPP.Repositories.AgentRepository;
 import com.example.homeyAPP.Repositories.HouseRepository;
+import com.example.homeyAPP.Repositories.LocationRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +25,36 @@ import java.util.Optional;
 public class HouseServices {
 
     final HouseRepository houseRepository;
+    final AddressRepository addressRepository;
+    final LocationRepository locationRepository;
+    final AgentRepository agentRepository;
 
     public House addHouse(HouseRequest reqHouse) {
+        String city = reqHouse.getCity();
+        String region = reqHouse.getRegion();
+
+        String email = reqHouse.getOwner_id();
+
+        Optional<Agent> agent = agentRepository.findAgentByEmail(email);
+        Agent a = null;
+        if (agent.isPresent()) {
+            // If not, create a new address
+            a = agent.get();
+        }
+
+
+        // Check if an address with the same city and region exists
+        Address address = addressRepository.findByCityAndRegion(city, region);
+        if (address == null) {
+            // If not, create a new address
+            address = new Address(city, region);
+            addressRepository.save(address);
+        }
+
+        Location location = new Location(address);
+        locationRepository.save(location);
+
         House house = new House(
-                reqHouse.getAddress(),
-                reqHouse.getCity(),
-                reqHouse.getRegion(),
                 reqHouse.getType(),
                 reqHouse.getStatus(),
                 reqHouse.getPrice(),
@@ -43,7 +65,8 @@ public class HouseServices {
                 reqHouse.getRoomsNum(),
                 reqHouse.getBathroomsNum(),
                 reqHouse.getFloorNum(),
-                reqHouse.getOwner_id()
+                a,
+                location
                 );
         return houseRepository.save(house);
     }
@@ -80,29 +103,23 @@ public class HouseServices {
         return houseRepository.findAllByRoomsNumBeforeAndBathroomsNum(rooms, bathrooms);
     }
 
-    public List<House> getHousesbyCityandRegion(String city, String region) {
-        return houseRepository.findAllByCityAndRegion(city,region);
-    }
+
 
     public House updateHouse(Long id, HouseRequest reqHouse) {
         Optional<House> optionalHouse = houseRepository.findById(id);
+        Optional<Agent> a = agentRepository.findAgentByEmail(reqHouse.getOwner_id());
+        Agent agent = a.isPresent() ? a.get() : null;
         if (optionalHouse.isPresent()) {
             House house = optionalHouse.get();
-            house.setAddress(reqHouse.getAddress());
-            house.setCity(reqHouse.getCity());
-            house.setRegion(reqHouse.getRegion());
             house.setType(reqHouse.getType());
             house.setStatus(reqHouse.getStatus());
             house.setPrice(reqHouse.getPrice());
             house.setSize(reqHouse.getSize());
-            house.setLatitude(reqHouse.getLatitude());
-            house.setLongitude(reqHouse.getLongitude());
             house.setGardenSize(reqHouse.getGardenSize());
             house.setRoomsNum(reqHouse.getRoomsNum());
             house.setBathroomsNum(reqHouse.getBathroomsNum());
             house.setFloorNum(reqHouse.getFloorNum());
-            house.setOwner_id(reqHouse.getOwner_id());
-
+            house.setOwner_id(agent);
             return houseRepository.save(house);
         } else {
             throw new ResourceNotFoundException("House not found with id: " + id);

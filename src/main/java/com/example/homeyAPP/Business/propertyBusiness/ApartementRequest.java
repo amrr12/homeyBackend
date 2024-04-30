@@ -13,18 +13,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApartementRequest {
-
-    private String address;
-    private String city;
-    private String region;
     private Type type;
     private PropertyStatus status;
     private double price;
     private double size;
-    private double latitude;
-    private double longitude;
     private int roomsNum;
     private int bathroomsNum;
     private int floor;
-    private Long owner_id;
+    private String owner_id;
+    private double latitude;
+    private double longitude;
 }

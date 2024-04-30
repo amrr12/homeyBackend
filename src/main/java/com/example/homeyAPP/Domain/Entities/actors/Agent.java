@@ -36,6 +36,8 @@ public class Agent extends User implements UserDetails {
     private List<Apartment> apartments;
 
 
+
+
     public Agent(String firstName, String lastName, String email, String userPassword, String phoneNumber, Role role) {
        this.setFirstName(firstName);
        this.setLastName(lastName);
